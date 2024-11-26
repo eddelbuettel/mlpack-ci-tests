@@ -32,20 +32,10 @@ jobs:
         uses: lukka/get-cmake@latest
 
       - name: Call CMake
-        run: cmake -S . -B build \
-        	-DDEBUG=OFF \
-                -DPROFILE=OFF \
-                -DBUILD_CLI_EXECUTABLES=OFF \
-                -DBUILD_PYTHON_BINDINGS=OFF \
-                -DBUILD_JULIA_BINDINGS=OFF \
-                -DBUILD_GO_BINDINGS=OFF \
-                -DBUILD_R_BINDINGS=ON \
-                -DDOWNLOAD_DEPENDENCIES=ON \
-                -DBUILD_TESTS=OFF \
-                -DCEREAL_INCLUDE_DIR=../cereal-1.3.2/include/ 
+        run: cmake -S . -B build -DDEBUG=OFF -DPROFILE=OFF -DBUILD_CLI_EXECUTABLES=OFF -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_JULIA_BINDINGS=OFF -DBUILD_GO_BINDINGS=OFF -DBUILD_R_BINDINGS=ON -DDOWNLOAD_DEPENDENCIES=ON -DBUILD_TESTS=OFF -DCEREAL_INCLUDE_DIR=../cereal-1.3.2/include
 
       - name: Build
-        run: cmake --build build -- VERBOSE=1
+        run: cd build && VERBOSE=1 make R
           
       #- name: Bootstrap
       #  run: ./run.sh bootstrap
