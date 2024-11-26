@@ -1,5 +1,5 @@
 # Starting from https://eddelbuettel.github.io/r-ci/ and adapted
-# R package specific parts for Bootstrap, includingDeps and Test removed, cmake added
+# R package specific parts for build and test commented out, cmake added, deps adjusted
 
 name: ci
 
@@ -28,6 +28,12 @@ jobs:
       - name: Setup
         uses: eddelbuettel/github-actions/r-ci-setup@master
 
+      - name: Bootstrap
+        run: ./run.sh bootstrap
+
+      - name: Dependencies
+        run: Rscript -e 'install.packages(c("roxygen2", "Rcpp", "RcppArmadillo", "RcppEnsmallen", "testthat", "pkgbuild"))'
+
       - name: Get CMake
         uses: lukka/get-cmake@latest
 
@@ -37,12 +43,6 @@ jobs:
       - name: Build
         run: cd build && VERBOSE=1 make R
           
-      #- name: Bootstrap
-      #  run: ./run.sh bootstrap
-
-      #- name: Dependencies
-      #  run: ./run.sh install_all
-
       #- name: Test
       #  run: ./run.sh run_tests
 
