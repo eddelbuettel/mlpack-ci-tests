@@ -38,32 +38,35 @@ jobs:
         uses: lukka/get-cmake@latest
 
       - name: Get CCache
-        uses: hendrikmuhs/ccache-action@v1.2.11
+        uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: ${{ matrix.os }}
 
       - name: Prepare R for Ccache (gcc/g++)
-        run: mkdir -p ~/.ccache ~/.R && echo "sloppiness = include_file_ctime" > ~/.ccache/ccache.conf \
-               && echo "hash_dir = false" >> ~/.ccache/ccache.conf && echo "CC=ccache gcc" > ~/.R/Makevars \
+        run: mkdir -p ~/.config/ccache ~/.R && echo "sloppiness = include_file_ctime" >> ~/.config/ccache/ccache.conf \
+               && echo "hash_dir = false" >> ~/.config/ccache/ccache.conf && echo "CC=ccache gcc" > ~/.R/Makevars \
                && echo "CXX=ccache g++" >> ~/.R/Makevars && echo "CXX17=ccache g++" >> ~/.R/Makevars \
                && echo "SHLIB_CXXLD=ccache g++" >> ~/.R/Makevars
         if: ${{ matrix.os == 'ubuntu-latest' }}
 
       - name: Prepare R for Ccache (clang/clang++)
-        run: mkdir -p ~/.ccache ~/.R && echo "sloppiness = include_file_ctime" > ~/.ccache/ccache.conf \
-               && echo "hash_dir = false" >> ~/.ccache/ccache.conf && echo "CC=ccache clang" > ~/.R/Makevars \
+        run: mkdir -p ~/.config/ccache ~/.R && echo "sloppiness = include_file_ctime" >> ~/.config/ccache/ccache.conf \
+               && echo "hash_dir = false" >> ~/.config/ccache/ccache.conf && echo "CC=ccache clang" > ~/.R/Makevars \
                && echo "CXX=ccache clang++" >> ~/.R/Makevars && echo "CXX17=ccache clang++" >> ~/.R/Makevars \
                && echo "SHLIB_CXXLD=ccache clang++" >> ~/.R/Makevars
         if: ${{ matrix.os == 'macOS-latest' }}
 
-      - name: Blow away build
-        run: rm -rf build/
-      
+      - name: CCache config check
+        run: ccache -p
+        
+      #- name: Blow away build
+      #  run: rm -rf build/
+          
       - name: Call CMake
-        run: cmake -S . -B build -DDEBUG=OFF -DPROFILE=OFF -DBUILD_CLI_EXECUTABLES=OFF -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_JULIA_BINDINGS=OFF -DBUILD_GO_BINDINGS=OFF -DBUILD_R_BINDINGS=ON -DDOWNLOAD_DEPENDENCIES=ON -DBUILD_TESTS=OFF -DCEREAL_INCLUDE_DIR=../cereal-1.3.2/include
-
+        run: cmake -S . -B build -DDEBUG=OFF -DPROFILE=OFF -DBUILD_CLI_EXECUTABLES=OFF -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_JULIA_BINDINGS=OFF -DBUILD_GO_BINDINGS=OFF -DBUILD_R_BINDINGS=ON -DDOWNLOAD_DEPENDENCIES=ON -DBUILD_TESTS=OFF -DCEREAL_INCLUDE_DIR=../cereal-1.3.2/include       
+        
       - name: Build
-        run: cd build && VERBOSE=1 make R
+        run: cd build && VERBOSE=1 make -j $(nproc) R 
 
       - name: Install R package 
         run: cd build && R CMD INSTALL ./src/mlpack/bindings/R/mlpack_*.tar.gz
