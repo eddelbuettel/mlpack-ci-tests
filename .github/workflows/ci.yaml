@@ -41,24 +41,25 @@ jobs:
         uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: ${{ matrix.os }}
-          variant: sccache
+          # this is the default but 'sccache' can be selected here
+          variant: ccache
 
       - name: Prepare R for Ccache (gcc/g++)
         run: mkdir -p ~/.config/ccache ~/.R && echo "sloppiness = include_file_ctime" >> ~/.config/ccache/ccache.conf \
-               && echo "hash_dir = false" >> ~/.config/ccache/ccache.conf && echo "CC=sccache gcc" > ~/.R/Makevars \
-               && echo "CXX=sccache g++" >> ~/.R/Makevars && echo "CXX17=sccache g++" >> ~/.R/Makevars \
-               && echo "SHLIB_CXXLD=sccache g++" >> ~/.R/Makevars
+               && echo "hash_dir = false" >> ~/.config/ccache/ccache.conf && echo "CC=ccache gcc" > ~/.R/Makevars \
+               && echo "CXX=ccache g++" >> ~/.R/Makevars && echo "CXX17=ccache g++" >> ~/.R/Makevars \
+               && echo "SHLIB_CXXLD=ccache g++" >> ~/.R/Makevars
         if: ${{ matrix.os == 'ubuntu-latest' }}
 
       - name: Prepare R for Ccache (clang/clang++)
         run: mkdir -p ~/.config/ccache ~/.R && echo "sloppiness = include_file_ctime" >> ~/.config/ccache/ccache.conf \
-               && echo "hash_dir = false" >> ~/.config/ccache/ccache.conf && echo "CC=sccache clang" > ~/.R/Makevars \
-               && echo "CXX=sccache clang++" >> ~/.R/Makevars && echo "CXX17=sccache clang++" >> ~/.R/Makevars \
-               && echo "SHLIB_CXXLD=sccache clang++" >> ~/.R/Makevars
+               && echo "hash_dir = false" >> ~/.config/ccache/ccache.conf && echo "CC=ccache clang" > ~/.R/Makevars \
+               && echo "CXX=ccache clang++" >> ~/.R/Makevars && echo "CXX17=ccache clang++" >> ~/.R/Makevars \
+               && echo "SHLIB_CXXLD=ccache clang++" >> ~/.R/Makevars
         if: ${{ matrix.os == 'macOS-latest' }}
 
-      #- name: CCache config check
-      #  run: ccache -p
+      - name: CCache config check
+        run: ccache -p
         
       #- name: Blow away build
       #  run: rm -rf build/
