@@ -115,6 +115,7 @@ steps:
       key: 'ccache | "$(Agent.OS)" | **/*.cpp, **/*.h'
       path: $(CCACHE_DIR)
       cacheHitVar: CACHE_RESTORED
+      restoreKeys: 'ccache | "$(Agent.OS)"'
     displayName: "Cache ccache directory"
     
   # Configure mlpack (CMake)
@@ -137,7 +138,11 @@ steps:
   #    CTEST_OUTPUT_ON_FAILURE=1 ctest -T Test .
   #  workingDirectory: $(Build.SourcesDirectory)
   #  displayName: 'Run tests via ctest'
-    
+
+  # Install the R package (also a check on ccache use)
+  - script: cd build && sudo R CMD INSTALL ./src/mlpack/bindings/R/mlpack_*.tar.gz
+    displayName: Install R package
+  
   # Show cache statistics
   - script: ccache -s 
     displayName: "Show ccache stats"
