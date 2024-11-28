@@ -15,15 +15,14 @@ steps:
   - checkout: self
     clean: true
     fetchDepth: 1
-    workingDirectory: $(Build.SourcesDirectory)
 
   # Prepare ccache
   - script: |
-        sudo apt update
-        sudo apt install -y ccache
-        export PATH="/usr/lib/ccache:$PATH"
-        ccache -z # Reset ccache stats
-      displayName: "Install and configure ccache"
+      sudo apt update
+      sudo apt install -y ccache
+      export PATH="/usr/lib/ccache:$PATH"
+      ccache -z # Reset ccache stats
+    displayName: "Install and configure ccache"
 
   # Restore cache
   - task: Cache@2
@@ -82,11 +81,24 @@ steps:
   # Configure mlpack (CMake)
   - script: |
       mkdir build && cd build
-      cmake -DDEBUG=OFF -DPROFILE=OFF -DBUILD_TESTS=OFF -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_JULIA_BINDINGS=OFF -DBUILD_GO_BINDINGS=OFF -DBUILD_R_BINDINGS=OFF -DUSE_PRECOMPILED_HEADERS=OFF -DCEREAL_INCLUDE_DIR=/usr/include/ ..
+      cmake -DDEBUG=OFF -DPROFILE=OFF -DBUILD_TESTS=ON -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_JULIA_BINDINGS=OFF -DBUILD_GO_BINDINGS=OFF -DBUILD_R_BINDINGS=OFF -DUSE_PRECOMPILED_HEADERS=OFF -DCEREAL_INCLUDE_DIR=/usr/include/ ..
     workingDirectory: $(Build.SourcesDirectory)
     displayName: 'CMake'
 
   # Build mlpack
-  - script: cd build && make -j2
+  - script: |
+      cd build
+      make -j2
     workingDirectory: $(Build.SourcesDirectory)
     displayName: 'Build'
+
+  # Run tests via ctest.
+  - script: |
+      cd build
+      CTEST_OUTPUT_ON_FAILURE=1 ctest -T Test .
+    workingDirectory: $(Build.SourcesDirectory)
+    displayName: 'Run tests via ctest'
+    
+  # Show cache statistics
+  - script: ccache -s 
+    displayName: "Show ccache stats"
