@@ -33,14 +33,6 @@ steps:
       cp -vax .ci/etc/R_Makevars ~/.R/Makevars
     displayName: "Configure ccache"
 
-  # Restore cache
-  - task: Cache@2
-    inputs:
-      key: 'ccache | "$(Agent.OS)" | **/*.cpp, **/*.h'
-      path: $(CCACHE_DIR)
-      cacheHitVar: CACHE_RESTORED
-    displayName: "Cache ccache directory"
-
   # Setup r2u (cf eddelbuettel/r2u repo and inst/scripts/ directory)
   - script: |
       ## First: update apt and get keys
@@ -117,6 +109,14 @@ steps:
 
     displayName: 'Install Build Dependencies'
 
+  # Restore cache
+  - task: Cache@2
+    inputs:
+      key: 'ccache | "$(Agent.OS)" | **/*.cpp, **/*.h'
+      path: $(CCACHE_DIR)
+      cacheHitVar: CACHE_RESTORED
+    displayName: "Cache ccache directory"
+    
   # Configure mlpack (CMake)
   - script: |
       mkdir build && cd build
