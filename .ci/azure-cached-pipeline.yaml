@@ -20,8 +20,13 @@ steps:
   - script: |
       sudo apt update
       sudo apt install -y ccache
+      ccache --set-config "sloppiness=include_file_ctime"
+      ccache --set-config "hash_dir = false" 
+      ccache --show-config
       export PATH="/usr/lib/ccache:$PATH"
       ccache -z # Reset ccache stats
+      mkdir -p ~/.R
+      cp -vax .ci/etc/R_Makevars ~/.R/Makevars
     displayName: "Install and configure ccache"
 
   # Restore cache
