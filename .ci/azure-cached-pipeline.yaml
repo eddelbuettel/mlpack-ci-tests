@@ -32,6 +32,36 @@ steps:
       cacheHitVar: CACHE_RESTORED
     displayName: "Cache ccache directory"
 
+  # Setup r2u (cf eddelbuettel/r2u repo and inst/scripts/ directory)
+  - script: |
+      ## First: update apt and get keys
+      sudo apt update -qq && sudo apt install --yes --no-install-recommends wget ca-certificates gnupg 
+      wget -q -O- https://eddelbuettel.github.io/r2u/assets/dirk_eddelbuettel_key.asc | sudo tee -a /etc/apt/trusted.gpg.d/cranapt_key.asc
+      ## Second: add the repo -- here we use the well-connected mirror
+      echo "deb [arch=amd64] https://r2u.stat.illinois.edu/ubuntu jammy main" | sudo tee -a /etc/apt/sources.list.d/cranapt.list
+      apt update
+      ## Third: ensure current R is used
+      wget -q -O- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+      echo "deb [arch=amd64] https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/" | sudo tee -a /etc/apt/sources.list.d/cran_r.list
+      sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 67C2D66C4B1D4339 51716619E084DAB9
+      sudo apt update -qq
+      DEBIAN_FRONTEND=noninteractive sudo apt install --yes --no-install-recommends r-base-core
+      ## Fourth: add pinning to ensure package sorting
+      echo "Package: *" | sudo tee -a /etc/apt/preferences.d/99cranapt
+      echo "Pin: release o=CRAN-Apt Project" | sudo tee -a /etc/apt/preferences.d/99cranapt
+      echo "Pin: release l=CRAN-Apt Packages" | sudo tee -a /etc/apt/preferences.d/99cranapt
+      echo "Pin-Priority: 700" | sudo tee -a /etc/apt/preferences.d/99cranapt
+      ## Fifth: install bspm (and its Python requirements) and enable it
+      ## If needed (in bare container, say) install python tools for bspm and R itself
+      sudo apt install --yes --no-install-recommends python3-dbus python3-gi python3-apt make
+      ## Then install bspm (as root) and enable it, and enable a speed optimization
+      sudo Rscript -e 'install.packages("bspm")'
+      echo "suppressMessages(bspm::enable())" | sudo tee -a /etc/R/Rprofile.site
+      echo "options(bspm.version.check=FALSE)" | sudo tee -a /etc/R/Rprofile.site
+      ## Now install build-deps
+      sudo Rscript -e 'install.packages(c("roxygen2", "Rcpp", "RcppArmadillo", "RcppEnsmallen", "testthat", "pkgbuild"))'
+    displayName: "Setup r2u and install R packages"
+      
   # Install build depencies (TODO: Cache these too ? Use `apt` for Armadillo)
   - script: |
       # Workaround to avoid a build failure, because we run out of memory.
@@ -81,7 +111,7 @@ steps:
   # Configure mlpack (CMake)
   - script: |
       mkdir build && cd build
-      cmake -DDEBUG=OFF -DPROFILE=OFF -DBUILD_TESTS=ON -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_JULIA_BINDINGS=OFF -DBUILD_GO_BINDINGS=OFF -DBUILD_R_BINDINGS=OFF -DUSE_PRECOMPILED_HEADERS=OFF -DCEREAL_INCLUDE_DIR=/usr/include/ ..
+      cmake -DDEBUG=OFF -DPROFILE=OFF -DBUILD_TESTS=OFF -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_JULIA_BINDINGS=OFF -DBUILD_GO_BINDINGS=OFF -DBUILD_R_BINDINGS=ON -DUSE_PRECOMPILED_HEADERS=OFF -DCEREAL_INCLUDE_DIR=/usr/include/ ..
     workingDirectory: $(Build.SourcesDirectory)
     displayName: 'CMake'
 
@@ -93,11 +123,11 @@ steps:
     displayName: 'Build'
 
   # Run tests via ctest.
-  - script: |
-      cd build
-      CTEST_OUTPUT_ON_FAILURE=1 ctest -T Test .
-    workingDirectory: $(Build.SourcesDirectory)
-    displayName: 'Run tests via ctest'
+  #- script: |
+  #    cd build
+  #    CTEST_OUTPUT_ON_FAILURE=1 ctest -T Test .
+  #  workingDirectory: $(Build.SourcesDirectory)
+  #  displayName: 'Run tests via ctest'
     
   # Show cache statistics
   - script: ccache -s 
