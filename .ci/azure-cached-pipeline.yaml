@@ -16,23 +16,6 @@ steps:
     clean: true
     fetchDepth: 1
 
-  # Prepare ccache
-  - script: |
-      sudo apt update
-      sudo apt install -y ccache
-      export PATH="/usr/lib/ccache:$PATH"
-    displayName: "Install ccache"
-
-  # Config ccache
-  - script: |
-      ccache --set-config "sloppiness=include_file_ctime"
-      ccache --set-config "hash_dir=false" 
-      ccache --show-config
-      ccache -z # Reset ccache stats
-      mkdir -p ~/.R
-      cp -vax .ci/etc/R_Makevars ~/.R/Makevars
-    displayName: "Configure ccache"
-
   # Setup r2u (cf eddelbuettel/r2u repo and inst/scripts/ directory)
   - script: |
       ## First: update apt and get keys
@@ -109,6 +92,23 @@ steps:
 
     displayName: 'Install Build Dependencies'
 
+  # Prepare ccache
+  - script: |
+      sudo apt update
+      sudo apt install -y ccache
+      export PATH="/usr/lib/ccache:$PATH"
+    displayName: "Install ccache"
+
+  # Config ccache
+  - script: |
+      ccache --set-config "sloppiness=include_file_ctime"
+      ccache --set-config "hash_dir=false" 
+      ccache --show-config
+      ccache -z # Reset ccache stats
+      mkdir -p ~/.R
+      cp -vax .ci/etc/R_Makevars ~/.R/Makevars
+    displayName: "Configure ccache"
+
   # Restore cache
   - task: Cache@2
     inputs:
@@ -122,14 +122,14 @@ steps:
       mkdir build && cd build
       cmake -DDEBUG=OFF -DPROFILE=OFF -DBUILD_TESTS=OFF -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_JULIA_BINDINGS=OFF -DBUILD_GO_BINDINGS=OFF -DBUILD_R_BINDINGS=ON -DUSE_PRECOMPILED_HEADERS=OFF -DCEREAL_INCLUDE_DIR=/usr/include/ ..
     workingDirectory: $(Build.SourcesDirectory)
-    displayName: 'CMake'
+    displayName: 'Run CMake'
 
   # Build mlpack
   - script: |
       cd build
       make -j2
     workingDirectory: $(Build.SourcesDirectory)
-    displayName: 'Build'
+    displayName: 'Run Build'
 
   # Run tests via ctest.
   #- script: |
