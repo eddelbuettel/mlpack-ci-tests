@@ -107,6 +107,8 @@ steps:
       ccache -z # Reset ccache stats
       mkdir -p ~/.R
       cp -vax .ci/etc/R_Makevars ~/.R/Makevars
+      sudo mkdir -p /root/.R
+      sudo cp -vax ~/.R/Makevars /root/.R/Makevars
     displayName: "Configure ccache"
 
   # Restore cache
