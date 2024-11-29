@@ -8,7 +8,7 @@ pool:
 
 variables:
   - name: CCACHE_DIR
-    value: /home/vsts/.ccache
+    value: $(Pipeline.Workspace)/ccache
 
 steps:
   # Checkout repository itself
@@ -97,6 +97,7 @@ steps:
       sudo apt update
       sudo apt install -y ccache
       export PATH="/usr/lib/ccache:$PATH"
+      echo "##vso[task.prependpath]/usr/lib/ccache"
     displayName: "Install ccache"
 
   # Config ccache
@@ -114,9 +115,10 @@ steps:
   # Restore cache
   - task: Cache@2
     inputs:
-      key: 'ccache | "$(Agent.OS)" | **/*.cpp, **/*.h'
+      #key: 'ccache | "$(Agent.OS)" | **/*.cpp, **/*.h'
+      key: 'ccache | "$(Agent.OS)" | $(Build.SourceVersion)'
       path: $(CCACHE_DIR)
-      cacheHitVar: CACHE_RESTORED
+      #cacheHitVar: CACHE_RESTORED
       restoreKeys: 'ccache | "$(Agent.OS)"'
     displayName: "Cache ccache directory"
     
