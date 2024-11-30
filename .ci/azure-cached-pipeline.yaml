@@ -148,5 +148,5 @@ steps:
     displayName: Install R package
   
   # Show cache statistics
-  - script: ccache -s 
+  - script: ccache -s -v
     displayName: "Show ccache stats"
