@@ -315,11 +315,6 @@ if (BUILD_R_BINDINGS)
   add_custom_command(TARGET r_build POST_BUILD
       COMMAND ${R_EXECUTABLE} CMD build mlpack
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-       -E env
-      "CC=${CCACHE_PROGRAM} ${CMAKE_C_COMPILER}"
-      "CXX=${CCACHE_PROGRAM} ${CMAKE_CXX_COMPILER}"
-      "CXX17=${CCACHE_PROGRAM} ${CMAKE_CXX_COMPILER}"
-      "SHLIB_CXXLD=${CCACHE_PROGRAM} ${CMAKE_CXX_COMPILER}"
   )
 
   # Installation script for the packagae.
@@ -327,11 +322,6 @@ if (BUILD_R_BINDINGS)
       "execute_process(
          COMMAND ${R_EXECUTABLE} CMD INSTALL mlpack_${PACKAGE_VERSION}.tar.gz
          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})"
-         -E env
-         "CC=${CCACHE_PROGRAM} ${CMAKE_C_COMPILER}"
-         "CXX=${CCACHE_PROGRAM} ${CMAKE_CXX_COMPILER}"
-         "CXX17=${CCACHE_PROGRAM} ${CMAKE_CXX_COMPILER}"
-         "SHLIB_CXXLD=${CCACHE_PROGRAM} ${CMAKE_CXX_COMPILER}"
   )
 
   add_dependencies(R r_build)
