@@ -48,10 +48,10 @@ jobs:
           # this is the default but 'sccache' can be selected here
           variant: ccache
 
-      - name: Prepare R for Ccache 
-        run: |
-          mkdir -p ~/.R
-          cp -vax .github/etc/R_Makevars_${{ matrix.compiler }} ~/.R/Makevars
+      #- name: Prepare R for Ccache 
+      #  run: |
+      #    mkdir -p ~/.R
+      #    cp -vax .github/etc/R_Makevars_${{ matrix.compiler }} ~/.R/Makevars
 
       - name: Configure Ccache for R
         run: |
