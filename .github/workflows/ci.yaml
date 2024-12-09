@@ -117,6 +117,12 @@ jobs:
         run: |
           ls -l mlpack*
 
+      - name: Setup
+        uses: eddelbuettel/github-actions/r-ci-setup@master
+
+      - name: Bootstrap
+        run: ./run.sh bootstrap
+          
       - name: Install remotes
         run: ./run.sh install_cran remotes rcmdcheck curl
 
