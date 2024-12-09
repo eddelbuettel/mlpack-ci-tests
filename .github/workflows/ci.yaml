@@ -133,6 +133,6 @@ jobs:
         run: sudo Rscript -e "remotes::install_deps('${{ needs.stepOne.outputs.r_bindings }}', dependencies = TRUE)"
          
       - name: Check package
-        run: Rscript -e "rcmdcheck::rcmdcheck('${{ needs.jobR.outputs.r_bindings }}'), args = c('--no-manual','--as-cran'), error_on = 'error', check_dir = 'check')"
+        run: Rscript -e "rcmdcheck::rcmdcheck('${{ needs.stepOne.outputs.r_bindings }}'), args = c('--no-manual','--as-cran'), error_on = 'error', check_dir = 'check')"
 
         
