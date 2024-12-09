@@ -123,9 +123,8 @@ jobs:
       - name: Bootstrap
         run: ./run.sh bootstrap
           
-      # have remotes from bootstrap step so commenting out
-      #- name: Install remotes
-      #  run: ./run.sh install_r remotes rcmdcheck curl
+      - name: Install rcmdcheck too as needed below
+        run: ./run.sh install_r rcmdcheck
 
       - name: Check Variable
         run: echo '${{needs.stepOne.outputs.r_bindings}}'
