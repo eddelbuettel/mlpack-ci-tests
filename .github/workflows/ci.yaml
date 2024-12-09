@@ -117,12 +117,17 @@ jobs:
         run: |
           ls -l mlpack*
 
-      - name: Install dependencies
+      - name: Install remotes
         run: |
           sudo Rscript -e "install.packages('remotes')"
-          sudo Rscript -e "remotes::install_deps('${{ needs.jobR.outputs.r_bindings }}', dependencies = TRUE)"
           sudo Rscript -e 'remotes::install_cran(c("rcmdcheck", "curl"))'
 
+      - name: Check Variable
+        run: echo '${{ needs.jobR.outputs.r_bindings }}'
+
+      - name: Install Deps
+        run: sudo Rscript -e "remotes::install_deps('${{ needs.jobR.outputs.r_bindings }}', dependencies = TRUE)"
+         
       - name: Check package
         run: Rscript -e "rcmdcheck::rcmdcheck('${{ needs.jobR.outputs.r_bindings }}'), args = c('--no-manual','--as-cran'), error_on = 'error', check_dir = 'check')"
 
