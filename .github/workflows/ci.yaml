@@ -79,10 +79,10 @@ jobs:
         run: cmake -S . -B build -DDEBUG=OFF -DPROFILE=OFF -DBUILD_CLI_EXECUTABLES=OFF -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_JULIA_BINDINGS=OFF -DBUILD_GO_BINDINGS=OFF -DBUILD_R_BINDINGS=ON -DDOWNLOAD_DEPENDENCIES=ON -DBUILD_TESTS=OFF -DCEREAL_INCLUDE_DIR=../cereal-1.3.2/include       
         
       - name: Build
-        #run: cd build && VERBOSE=1 make -j 4 R
-        run: |
-          cd build/src/mlpack/bindings/R
-          wget -q https://dirk.eddelbuettel.com/tmp/mlpack_4.5.1.tar.gz
+        run: cd build && VERBOSE=1 make -j 4 R
+        #run: |
+        #  cd build/src/mlpack/bindings/R
+        #  wget -q https://dirk.eddelbuettel.com/tmp/mlpack_4.5.1.tar.gz
       
       #- name: Install R package 
       #  run: cd build && R CMD INSTALL ./src/mlpack/bindings/R/mlpack_*.tar.gz
@@ -113,9 +113,9 @@ jobs:
         with:
           name: mlpack_r_tarball
 
-      - name: Check download
-        run: |
-          ls -l mlpack*
+      #- name: Check download
+      #  run: |
+      #    ls -l mlpack*
 
       - name: Setup
         uses: eddelbuettel/github-actions/r-ci-setup@master
@@ -123,8 +123,9 @@ jobs:
       - name: Bootstrap
         run: ./run.sh bootstrap
           
-      - name: Install remotes
-        run: ./run.sh install_r remotes rcmdcheck curl
+      # have remotes from bootstrap step so commenting out
+      #- name: Install remotes
+      #  run: ./run.sh install_r remotes rcmdcheck curl
 
       - name: Check Variable
         run: echo '${{needs.stepOne.outputs.r_bindings}}'
