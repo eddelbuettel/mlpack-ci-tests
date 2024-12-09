@@ -21,9 +21,24 @@ jobs:
         
     runs-on: ${{ matrix.os }}
 
+    outputs:
+      r_bindings: ${{ steps.mlpack_version.outputs.mlpack_r_package }}
+
     steps:
       - name: Checkout 
         uses: actions/checkout@v4
+
+      - name: Extract mlpack version
+        id: mlpack_version
+        run: |
+          MLPACK_VERSION_MAJOR=$(grep -i ".*#define MLPACK_VERSION_MAJOR.*" src/mlpack/core/util/version.hpp | grep -o "[0-9]*")
+          MLPACK_VERSION_MINOR=$(grep -i ".*#define MLPACK_VERSION_MINOR.*" src/mlpack/core/util/version.hpp | grep -o "[0-9]*")
+          MLPACK_VERSION_PATCH=$(grep -i ".*#define MLPACK_VERSION_PATCH.*" src/mlpack/core/util/version.hpp | grep -o "[0-9]*")
+          MLPACK_VERSION_VALUE=${MLPACK_VERSION_MAJOR}.${MLPACK_VERSION_MINOR}.${MLPACK_VERSION_PATCH}
+          echo "mlpack_r_package=$(echo mlpack_"$MLPACK_VERSION_VALUE".tar.gz)" >> $GITHUB_OUTPUT
+
+      - name: Check Variable
+        run: echo ${{ steps.mlpack_version.outputs.mlpack_r_package }}
 
       - name: Setup
         uses: eddelbuettel/github-actions/r-ci-setup@master
@@ -80,3 +95,8 @@ jobs:
       - name: Show ccache stats
         run: ccache --show-stats --verbose --verbose
       
+      - name: Upload R packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlpack_r_tarball
+          path: build/src/mlpack/bindings/R/${{ steps.mlpack_version.outputs.mlpack_r_package }}
