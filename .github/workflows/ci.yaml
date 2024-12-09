@@ -124,10 +124,10 @@ jobs:
         run: ./run.sh bootstrap
           
       - name: Install remotes
-        run: ./run.sh install_cran remotes rcmdcheck curl
+        run: ./run.sh install_r remotes rcmdcheck curl
 
       - name: Check Variable
-        run: echo '${{ needs.stepOne.outputs.r_bindings }}'
+        run: echo '${{needs.stepOne.outputs.r_bindings}}'
 
       - name: Install Deps
         run: sudo Rscript -e "remotes::install_deps('${{needs.stepOne.outputs.r_bindings}}', dependencies = TRUE)"
