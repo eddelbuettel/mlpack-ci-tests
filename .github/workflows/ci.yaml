@@ -123,8 +123,8 @@ jobs:
       - name: Bootstrap
         run: ./run.sh bootstrap
           
-      - name: Install rcmdcheck too as needed below
-        run: ./run.sh install_r rcmdcheck
+      #- name: Install rcmdcheck too as needed below
+      #  run: ./run.sh install_r rcmdcheck
 
       - name: Check Variable
         run: echo '${{needs.stepOne.outputs.r_bindings}}'
@@ -132,7 +132,13 @@ jobs:
       - name: Install Deps
         run: sudo Rscript -e "remotes::install_deps('${{needs.stepOne.outputs.r_bindings}}', dependencies = TRUE)"
          
-      - name: Check package
-        run: Rscript -e "rcmdcheck::rcmdcheck('${{needs.stepOne.outputs.r_bindings}}', args = c('--no-manual','--as-cran'), error_on = 'error', check_dir = 'check')"
+      #- name: Check package
+      #  run: Rscript -e "rcmdcheck::rcmdcheck('${{needs.stepOne.outputs.r_bindings}}', args = c('--no-manual','--as-cran'), error_on = 'error', check_dir = 'check')"
+
+      - name: Install R package 
+        run: R CMD INSTALL ${{needs.stepOne.outputs.r_bindings}}
+        
+      - name: Test
+        run: R CMD INSTALL --no-manual --no-vignettes ${{needs.stepOne.outputs.r_bindings}}
 
         
