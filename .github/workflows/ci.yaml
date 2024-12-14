@@ -10,13 +10,14 @@ on:
 
 env:
   _R_CHECK_FORCE_SUGGESTS_: "false"
+  OMP_NUM_THREADS: "4"
 
 jobs:
   stepOne:
     strategy:
       matrix:
         include: 
-          #- {os: macOS-latest, compiler: clang}
+          - {os: macOS-latest, compiler: clang}
           - {os: ubuntu-latest, compiler: gcc}
         
     runs-on: ${{ matrix.os }}
@@ -41,14 +42,7 @@ jobs:
         run: echo ${{ steps.mlpack_version.outputs.mlpack_r_package }}
 
       - name: Setup
-        uses: eddelbuettel/github-actions/r-ci-setup@master
-
-      - name: Bootstrap
-        run: ./run.sh bootstrap
-
-      - name: Additional macOS Bootstrap
-        run: wget https://mac.r-project.org/tools/gfortran-12.2-universal.pkg -O /tmp/gfortran.pkg && sudo installer -pkg "/tmp/gfortran.pkg" -target / && rm "/tmp/gfortran.pkg"
-        if: ${{ matrix.os == 'macOS-latest' }}
+        uses: eddelbuettel/github-actions/r-ci@master
 
       - name: Dependencies
         run: Rscript -e 'install.packages(c("roxygen2", "Rcpp", "RcppArmadillo", "RcppEnsmallen", "testthat", "pkgbuild"))'
@@ -118,10 +112,10 @@ jobs:
       #    ls -l mlpack*
 
       - name: Setup
-        uses: eddelbuettel/github-actions/r-ci-setup@master
+        uses: eddelbuettel/github-actions/r-ci@master
 
-      - name: Bootstrap
-        run: ./run.sh bootstrap
+      #- name: Bootstrap
+      #  run: ./run.sh bootstrap
           
       #- name: Install rcmdcheck too as needed below
       #  run: ./run.sh install_r rcmdcheck
