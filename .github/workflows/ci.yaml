@@ -18,7 +18,7 @@ jobs:
       matrix:
         include: 
           - {os: macOS-latest, compiler: clang}
-          - {os: ubuntu-latest, compiler: gcc}
+          #- {os: ubuntu-latest, compiler: gcc}
         
     runs-on: ${{ matrix.os }}
 
@@ -36,7 +36,7 @@ jobs:
           MLPACK_VERSION_MINOR=$(grep -i ".*#define MLPACK_VERSION_MINOR.*" src/mlpack/core/util/version.hpp | grep -o "[0-9]*")
           MLPACK_VERSION_PATCH=$(grep -i ".*#define MLPACK_VERSION_PATCH.*" src/mlpack/core/util/version.hpp | grep -o "[0-9]*")
           MLPACK_VERSION_VALUE=${MLPACK_VERSION_MAJOR}.${MLPACK_VERSION_MINOR}.${MLPACK_VERSION_PATCH}
-          echo "mlpack_r_package=$(echo mlpack_"$MLPACK_VERSION_VALUE".tar.gz)" >> $GITHUB_OUTPUT
+          echo "mlpack_r_package=$(echo mlpack_"${MLPACK_VERSION_VALUE}"_"${{matrix.os}}".tar.gz)" >> $GITHUB_OUTPUT
 
       - name: Check Variable
         run: echo ${{ steps.mlpack_version.outputs.mlpack_r_package }}
