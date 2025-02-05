@@ -17,7 +17,7 @@ name: mlpack.mlpack
 jobs:
   jobR:
     name: mlpack R tarball
-    if: ${{ github.repository == 'mlpack/mlpack' }}
+    #if: ${{ github.repository == 'mlpack/mlpack' }}
     runs-on: ubuntu-latest
 
     outputs:
