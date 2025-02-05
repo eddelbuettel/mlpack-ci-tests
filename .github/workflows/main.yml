@@ -65,10 +65,10 @@ jobs:
           ccache --show-config
           ccache --zero-stats
 
-      - name: Query dependencies using remotes, also install pkgbuild used below
+      - name: Query dependencies using remotes, also install roxygen2 and pkgbuild used below
         run: |
           cp src/mlpack/bindings/R/mlpack/DESCRIPTION.in DESCRIPTION
-          Rscript -e 'install.packages(c("remotes", "pkgbuild"))'
+          Rscript -e 'install.packages(c("remotes", "roxygen2", "pkgbuild"))'
           Rscript -e 'remotes::install_deps(".", dependencies=TRUE)'
 
       #- name: Cache R packages
