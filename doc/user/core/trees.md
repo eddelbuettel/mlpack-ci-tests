@@ -13,6 +13,8 @@ different trees.  The following tree types are available in mlpack:
  * [`MaxRPTree`](trees/max_rp_tree.md)
  * [`BinarySpaceTree`](trees/binary_space_tree.md)
  * [`UBTree`](trees/ub_tree.md)
+ * [`CoverTree`](trees/cover_tree.md)
+ * [`Octree`](trees/octree.md)
 
 *Note:* this documentation is a work in progress.  Not all trees are documented
 yet.

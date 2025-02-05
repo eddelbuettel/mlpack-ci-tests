@@ -6,7 +6,7 @@ functional operating system (e.g., Linux, MacOS, Windows) with compatible
 ABI on both the host and the target. In addition, your objective is to create
 an embedded ABI (eabi). For now, this guide does not support none-eabi or
 bare-metal C/C++. The following table refers only to possible values of 
-`BOARD_NAME` CMake flag that needs to be specified before the compilation
+`ARCH_NAME` CMake flag that needs to be specified before the compilation
 process starts.
 
 If your device has a fully functional package manager such as apt (for Debian
@@ -37,7 +37,7 @@ adapt the CMake command below.  ***Don't forget to change
 ```sh
 cmake \
     -DBUILD_TESTS=ON \
-    -DBOARD_NAME=(Check the following table) \
+    -DARCH_NAME=(Check the following table) \
     -DCMAKE_CROSSCOMPILING=ON \
     -DCMAKE_TOOLCHAIN_FILE=../CMake/crosscompile-toolchain.cmake \
     -DTOOLCHAIN_PREFIX=(Check the following table) \
@@ -46,7 +46,7 @@ cmake \
 ```
 
 |-----------------------------------------------------------------------------
-| `BOARD_NAME` | link to crosscompiler | CMake command | Example applications |
+| `ARCH_NAME` | link to crosscompiler | CMake command | Example applications |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ARM11    | [Bootlin toolchain link](https://toolchains.bootlin.com/releases_armv6-eabihf.html) | [Sysroot and toolchain prefix](#arm11) | [ARM11 on Wikipedia](https://en.wikipedia.org/wiki/ARM11) |
 |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -64,7 +64,7 @@ cmake \
 |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | CORTEXA76 | [Bootlin toolchain link](https://toolchains.bootlin.com/releases_aarch64.html)      | [Sysroot and toolchain prefix](#cortexa76) | [Cortex A76 on Wikipedia](https://en.wikipedia.org/wiki/ARM_Cortex-A76)  |
 |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| C906      | [Bootlin toolchain link](https://toolchains.bootlin.com/releases_riscv64-lp64d.html)| [Sysroot and toolchain prefix](#c906) | [C906 on riscv](https://riscv.org/news/2020/11/xuantie-c906-based-allwinner-risc-v-processor-to-power-12-linux-sbcs/attachment/allwinner-xuantie-c906-risc-v-processor/) |
+| C906      | [Bootlin toolchain link](https://toolchains.bootlin.com/releases_riscv64-lp64d.html)| [Sysroot and toolchain prefix](#c906) | [C906 on riscv](https://www.riscvschool.com/2023/03/09/t-head-xuantie-c906-risc-v/) |
 |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | x280      | [Bootlin toolchain link](https://toolchains.bootlin.com/releases_riscv64-lp64d.html)| [Sysroot and toolchain prefix](#x280) | [x280 on SiFive](https://www.sifive.cn/api/document-file?uid=x280-datasheet) |
 |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

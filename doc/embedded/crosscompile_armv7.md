@@ -87,7 +87,7 @@ the target.
 In this tutorial we use the autodownloader since it automates the entire
 process, including the cross-compilation of OpenBLAS.  The first step is to
 create a build directory, just like the
-[regular build process](../../README.md#3-installing-and-using-mlpack-in-c):
+[regular build process](../user/install.md#install-from-source):
 
 ```sh
 cd mlpack/
@@ -112,7 +112,7 @@ cross-compilation toolchain.
 ```sh
 cmake \
     -DBUILD_TESTS=ON \
-    -DBOARD_NAME="RPI2" \
+    -DARCH_NAME="RPI2" \
     -DCMAKE_CROSSCOMPILING=ON \
     -DCMAKE_TOOLCHAIN_FILE=../CMake/crosscompile-toolchain.cmake \
     -DTOOLCHAIN_PREFIX=/path/to/bootlin/toolchain/armv7-eabihf--glibc--stable-2024.02-1/bin/arm-buildroot-linux-gnueabihf- \
