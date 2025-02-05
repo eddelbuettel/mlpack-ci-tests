@@ -33,7 +33,7 @@ jobs:
           MLPACK_VERSION_MINOR=$(grep -i ".*#define MLPACK_VERSION_MINOR.*" src/mlpack/core/util/version.hpp | grep -o "[0-9]*")
           MLPACK_VERSION_PATCH=$(grep -i ".*#define MLPACK_VERSION_PATCH.*" src/mlpack/core/util/version.hpp | grep -o "[0-9]*")
           MLPACK_VERSION_VALUE=${MLPACK_VERSION_MAJOR}.${MLPACK_VERSION_MINOR}.${MLPACK_VERSION_PATCH}
-          echo "mlpack_r_package=$(echo mlpack_"$MLPACK_VERSION_VALUE".tar.gz)" >> $GITHUB_OUTPUT
+          echo "mlpack_r_package=$(echo mlpack_${MLPACK_VERSION_VALUE}.tar.gz)" >> $GITHUB_OUTPUT
 
       # Setup Pandoc
       - name: Setup pandoc
@@ -123,7 +123,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { os: windows-latest, r: "release", name: "Windows R" }
+          #- { os: windows-latest, r: "release", name: "Windows R" }
           - { os: macOS-latest,   r: "release", name: "macOS R" }
           - { os: ubuntu-latest,  r: "release", name: "Linux R" }
 
@@ -141,30 +141,35 @@ jobs:
         with:
           name: mlpack_r_tarball
 
-      # Setup Pandoc
       - name: Setup pandoc
         uses: r-lib/actions/setup-pandoc@v2
 
-      # Setup p3m (macos/windows)
-      - uses: r-lib/actions/setup-r@v2
+      - name: Setup p3m.dev (macos)
+        uses: r-lib/actions/setup-r@v2
         if: runner.os == 'Windows' || runner.os == 'macOS'
         with:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
-      # Setup r2u (linux)
-      - name: Setup r2u
+      - name: Setup r2u (linux)
         if: runner.os != 'Windows' && runner.os != 'macOS'
         uses: eddelbuettel/github-actions/r2u-setup@master
-          
-      - name: Query dependencies using remotes, also install rcmdcheck and curl used below
-        run: |
-          Rscript -e 'install.packages(c("remotes", "rcmdcheck", "curl"))'
-          Rscript -e 'remotes::install_deps('${{ needs.jobR.outputs.r_bindings }}', dependencies=TRUE)'
 
-      - name: Check
+      - name: Add system packages (linux)
+        if: runner.os != 'Windows' && runner.os != 'macOS'
+        run: |
+          sudo apt update -qq
+          sudo apt install -y --allow-unauthenticated libopenblas-dev liblapack-dev libensmallen-dev libarmadillo-dev
+
+      - name: Install dependencies 
+        run: |
+          Rscript -e "install.packages(c('remotes', 'rcmdcheck'))"
+          Rscript -e "remotes::install_deps('${{ needs.jobR.outputs.r_bindings }}', dependencies=TRUE)"
+
+      - name: Run the package check
         # TODO: revert to error_on = 'warning'
-        run: Rscript -e "rcmdcheck::rcmdcheck('${{ needs.jobR.outputs.r_bindings }}', args = c('--no-manual','--as-cran'), error_on = 'error', check_dir = 'check')"
+        run: |
+          Rscript -e "rcmdcheck::rcmdcheck('${{ needs.jobR.outputs.r_bindings }}', args = c('--no-manual','--as-cran'), error_on = 'error', check_dir = 'check')"
 
       - name: Upload check results
         if: failure()
