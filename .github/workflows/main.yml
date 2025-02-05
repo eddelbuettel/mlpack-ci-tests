@@ -159,9 +159,8 @@ jobs:
           
       - name: Query dependencies using remotes, also install rcmdcheck and curl used below
         run: |
-          cp src/mlpack/bindings/R/mlpack/DESCRIPTION.in DESCRIPTION
-          Rscript -e 'install.packages(c("remotes", "rcmdcheck, "curl"))'
-          Rscript -e 'remotes::install_deps(".", dependencies=TRUE)'
+          Rscript -e 'install.packages(c("remotes", "rcmdcheck", "curl"))'
+          Rscript -e 'remotes::install_deps('${{ needs.jobR.outputs.r_bindings }}', dependencies=TRUE)'
 
       - name: Check
         # TODO: revert to error_on = 'warning'
